@@ -1,9 +1,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# AWS CREDENTIALS AND REGION
+# PROVIDER
 # ---------------------------------------------------------------------------------------------------------------------
-variable "profile" {
-  description = "AWS API key credentials to use"
-}
-variable "region" {
-  description = "AWS Region the infrastructure is hosted in"
+provider "aws" {
+  profile   = "${var.profile}"
+  region    = "${var.region}"
 }
