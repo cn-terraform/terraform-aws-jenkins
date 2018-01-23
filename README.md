@@ -6,20 +6,20 @@ This Terraform module deploys a Jenkins Master Server providing high availabilit
 
 This module deploys Jenkins on several cloud providers.
 
-Amazon Web Services  
+Amazon Web Services - PENDING  
 
 	module "jenkins" {
-		source = "bitbucket.org/jnonino/terraform-module-jenkins//aws"
+		source = "github.com/jnonino/jenkins-terraform-module//aws"
 	}
 	
-Google Cloud Platform  
+Google Cloud Platform - PENDING  
 
 	module "jenkins" {
-		source = "bitbucket.org/jnonino/terraform-module-jenkins//gcp"
+		source = "github.com/jnonino/jenkins-terraform-module//gcp"
 	}
 
-Microsoft Azure  
+Microsoft Azure - PENDING  
 
 	module "jenkins" {
-		source = "bitbucket.org/jnonino/terraform-module-jenkins//azure"
+		source = "github.com/jnonino/jenkins-terraform-module//azure"
 	}
