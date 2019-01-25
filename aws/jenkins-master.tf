@@ -6,6 +6,8 @@ locals {
     jenkins_master_cloudwatch_log_path = "${var.name_preffix}-jenkins-master"
     jenkins_container_web_port         = 80
     jenkins_container_slave_port       = 50000
+    jenkins_fargate_cpu_value          = 2048 # 2 vCPU  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
+    jenkins_fargate_memory_value       = 4096 # 4 GB    - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
 
 }
 
@@ -39,8 +41,8 @@ resource "aws_ecs_task_definition" "jenkins_master_td" {
     container_definitions    = "${data.template_file.jenkins_master_td_template.rendered}"
     requires_compatibilities = ["FARGATE"]
     network_mode             = "awsvpc"
-    cpu                      = "2048"
-    memory                   = "2048"
+    cpu                      = "${local.jenkins_fargate_cpu_value}"
+    memory                   = "${local.jenkins_fargate_memory_value}"
     execution_role_arn       = "${aws_iam_role.ecs_task_execution_role.arn}"
     task_role_arn            = "${aws_iam_role.ecs_task_execution_role.arn}"
 }
