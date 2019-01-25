@@ -52,7 +52,7 @@ resource "aws_ecs_task_definition" "jenkins_master_td" {
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_ecs_service" "jenkins_master_service" {
     name            = "${var.name_preffix}-jenkins-master"
-    depends_on      = [ "aws_alb_target_group.jenkins_master_alb_tg", "aws_iam_role_policy.ecs_service_role_policy"]
+    depends_on      = [ "aws_alb_target_group.jenkins_master_alb_tg" ]
     cluster         = "${aws_ecs_cluster.jenkins_cluster.id}"
     task_definition = "${aws_ecs_task_definition.jenkins_master_td.arn}"
     launch_type     = "FARGATE"
