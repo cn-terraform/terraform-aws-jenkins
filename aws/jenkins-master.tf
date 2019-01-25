@@ -57,7 +57,6 @@ resource "aws_ecs_service" "jenkins_master_service" {
     task_definition = "${aws_ecs_task_definition.jenkins_master_td.arn}"
     launch_type     = "FARGATE"
     desired_count   = 1
-    iam_role        = "${aws_iam_role.ecs_service_role.name}"
     network_configuration {
         security_groups = [ "${aws_security_group.ecs_service.id}" ]
         subnets         = [ "${var.public_subnets_ids}" ]
