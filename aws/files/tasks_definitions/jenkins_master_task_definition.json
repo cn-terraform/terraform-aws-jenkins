@@ -2,6 +2,8 @@
     {
         "name": "${NAME}",
         "image": "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}",
+        "cpu": ${CPU},
+        "memory": ${MEMORY},
         "portMappings": [
             {
                 "containerPort": ${JENKINS_CONTAINER_WEB_PORT},
@@ -19,12 +21,6 @@
               "awslogs-region": "${AWS_REGION}",
               "awslogs-stream-prefix": "ecs"
             }
-          },
-        "environment": [
-            {
-                "name": "NAME",
-                "value": "VAL"
-            }
-        ]
+        }
     }
 ]

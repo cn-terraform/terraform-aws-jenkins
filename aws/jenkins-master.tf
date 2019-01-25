@@ -2,21 +2,27 @@
 # Variables
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
-    jenkins_master_container_name      = "jenkins_master_container_name"
-    jenkins_master_cloudwatch_log_path = "${var.name_preffix}-jenkins-master"
-    jenkins_container_web_port         = 80
+    jenkins_master_container_name      = "jenkins_master"
+    jenkins_master_cloudwatch_log_path = "/ecs/service/${var.name_preffix}-jenkins-master"
+    jenkins_container_web_port         = 8080
     jenkins_container_slave_port       = 50000
     jenkins_fargate_cpu_value          = 2048 # 2 vCPU  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
     jenkins_fargate_memory_value       = 4096 # 4 GB    - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
-
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS Cloudwatch
 # ---------------------------------------------------------------------------------------------------------------------
-resource "aws_cloudwatch_log_group" "jenkins_master_logs" {
-  name              = "${local.jenkins_master_cloudwatch_log_path}"
-  retention_in_days = "7"
+resource "aws_cloudwatch_log_group" "jenkins_master_log_group" {
+    name              = "${local.jenkins_master_cloudwatch_log_path}"
+    retention_in_days = "7"
+    tags {
+        Name = "${local.jenkins_master_cloudwatch_log_path}"
+    }
+}
+resource "aws_cloudwatch_log_stream" "jenkins_master_log_stream" {
+  name           = "${local.jenkins_master_cloudwatch_log_path}"
+  log_group_name = "${aws_cloudwatch_log_group.jenkins_master_log_group.name}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -29,6 +35,8 @@ data "template_file" "jenkins_master_td_template" {
         NAME                       = "${local.jenkins_master_container_name}"
         DOCKER_IMAGE_NAME          = "jnonino/jenkins-master"
         DOCKER_IMAGE_TAG           = "latest"
+        CPU                        = "${local.jenkins_fargate_cpu_value}"
+        MEMORY                     = "${local.jenkins_fargate_memory_value}"
         CLOUDWATCH_PATH            = "${local.jenkins_master_cloudwatch_log_path}"
         AWS_REGION                 = "${var.region}"
         JENKINS_CONTAINER_WEB_PORT = "${local.jenkins_container_web_port}"
@@ -52,14 +60,15 @@ resource "aws_ecs_task_definition" "jenkins_master_td" {
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_ecs_service" "jenkins_master_service" {
     name            = "${var.name_preffix}-jenkins-master"
-    depends_on      = [ "aws_alb_target_group.jenkins_master_alb_tg" ]
+    depends_on      = [ "aws_alb_listener.jenkins_master_web_listener" ]
     cluster         = "${aws_ecs_cluster.jenkins_cluster.id}"
     task_definition = "${aws_ecs_task_definition.jenkins_master_td.arn}"
     launch_type     = "FARGATE"
     desired_count   = 1
     network_configuration {
-        security_groups = [ "${aws_security_group.ecs_service.id}" ]
-        subnets         = [ "${var.public_subnets_ids}" ]
+        security_groups  = [ "${aws_security_group.ecs_tasks_sg.id}" ]
+        subnets          = [ "${var.private_subnets_ids}" ]
+        assign_public_ip = true
     }
     load_balancer {
         target_group_arn = "${aws_alb_target_group.jenkins_master_alb_tg.arn}"
@@ -85,6 +94,7 @@ resource "aws_alb" "jenkins_master_alb" {
 # AWS ALB Target Group
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_alb_target_group" "jenkins_master_alb_tg" {
+    depends_on  = [ "aws_alb.jenkins_master_alb" ]
     name        = "${var.name_preffix}-jenkins-master-alb-tg"
     protocol    = "HTTP"
     port        = "${local.jenkins_container_web_port}"
@@ -104,7 +114,7 @@ resource "aws_alb_target_group" "jenkins_master_alb_tg" {
 # ---------------------------------------------------------------------------------------------------------------------
 resource "aws_alb_listener" "jenkins_master_web_listener" {
     load_balancer_arn = "${aws_alb.jenkins_master_alb.arn}"
-    port              = "${local.jenkins_container_web_port}"
+    port              = "80"
     protocol          = "HTTP"
     default_action {
         target_group_arn = "${aws_alb_target_group.jenkins_master_alb_tg.arn}"
@@ -124,7 +134,7 @@ resource "aws_alb_listener" "jenkins_master_slave_listener" {
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS Auto Scaling
 # ---------------------------------------------------------------------------------------------------------------------
-# CloudWatch Alarm
+# CloudWatch Alarm CPU High
 resource "aws_cloudwatch_metric_alarm" "jenkins_master_cpu_high" {
     alarm_name          = "${var.name_preffix}-jenkins-master-cpu-high"
     comparison_operator = "GreaterThanOrEqualToThreshold"
@@ -139,7 +149,22 @@ resource "aws_cloudwatch_metric_alarm" "jenkins_master_cpu_high" {
         ServiceName = "${aws_ecs_service.jenkins_master_service.name}"
     }
     alarm_actions = [ "${aws_appautoscaling_policy.jenkins_master_scale_up_policy.arn}" ]
-    ok_actions    = [ "${aws_appautoscaling_policy.jenkins_master_scale_down_policy.arn}" ]
+}
+# CloudWatch Alarm CPU Low
+resource "aws_cloudwatch_metric_alarm" "jenkins_master_cpu_low" {
+    alarm_name          = "${var.name_preffix}-jenkins-master-cpu-low"
+    comparison_operator = "LessThanOrEqualToThreshold"
+    evaluation_periods  = "3"
+    metric_name         = "CPUUtilization"
+    namespace           = "AWS/ECS"
+    period              = "60"
+    statistic           = "Average"
+    threshold           = "10"
+    dimensions {
+        ClusterName = "${aws_ecs_cluster.jenkins_cluster.name}"
+        ServiceName = "${aws_ecs_service.jenkins_master_service.name}"
+    }
+    alarm_actions = [ "${aws_appautoscaling_policy.jenkins_master_scale_down_policy.arn}" ]
 }
 # Scaling Up Policy
 resource "aws_appautoscaling_policy" "jenkins_master_scale_up_policy" {
