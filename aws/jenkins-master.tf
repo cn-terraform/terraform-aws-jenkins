@@ -89,7 +89,7 @@ resource "aws_alb_target_group" "jenkins_master_alb_tg" {
     protocol    = "HTTP"
     port        = "${local.jenkins_container_web_port}"
     vpc_id      = "${var.vpc_id}"
-    target_type = "instance"
+    target_type = "ip"
     health_check = {
         path = "/"
         port = "${local.jenkins_container_web_port}"
