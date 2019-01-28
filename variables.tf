@@ -22,10 +22,10 @@ variable "vpc_id" {
     description = "ID of the VPC"
 }
 variable "public_subnets_ids" {
-    type        = "list"
     description = "List of Public Subnets IDs"
+    type        = "list"
 }
 variable "private_subnets_ids" {
-    type        = "list"
     description = "List of Private Subnets IDs"
+    type        = "list"
 }
