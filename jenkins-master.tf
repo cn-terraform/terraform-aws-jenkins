@@ -156,7 +156,7 @@ resource "aws_cloudwatch_metric_alarm" "jenkins_master_cpu_low" {
 }
 # Scaling Up Policy
 resource "aws_appautoscaling_policy" "jenkins_master_scale_up_policy" {
-    name                    = "${var.name_preffix}-scale-up-policy"
+    name                    = "${var.name_preffix}-jenkins-master-scale-up-policy"
     depends_on              = [ "aws_appautoscaling_target.jenkins_master_scale_target" ]
     service_namespace       = "ecs"
     resource_id             = "service/${aws_ecs_cluster.jenkins_cluster.name}/${aws_ecs_service.jenkins_master_service.name}"
@@ -173,7 +173,7 @@ resource "aws_appautoscaling_policy" "jenkins_master_scale_up_policy" {
 }
 # Scaling Down Policy
 resource "aws_appautoscaling_policy" "jenkins_master_scale_down_policy" {
-    name                    = "${var.name_preffix}-scale-down-policy"
+    name                    = "${var.name_preffix}-jenkins-master-scale-down-policy"
     depends_on              = [ "aws_appautoscaling_target.jenkins_master_scale_target" ]
     service_namespace       = "ecs"
     resource_id             = "service/${aws_ecs_cluster.jenkins_cluster.name}/${aws_ecs_service.jenkins_master_service.name}"
