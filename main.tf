@@ -17,3 +17,10 @@ locals {
     jenkins_fargate_cpu_value          = 2048 # 2 vCPU  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
     jenkins_fargate_memory_value       = 4096 # 4 GB    - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# ECS Cluster
+# ---------------------------------------------------------------------------------------------------------------------
+resource "aws_ecs_cluster" "jenkins_cluster" {
+    name = "${var.name_preffix}-jenkins"
+}
