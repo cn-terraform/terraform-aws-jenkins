@@ -4,6 +4,10 @@ This Terraform module deploys a Jenkins Master Server providing high availabilit
 
 ## Usage
 
+Check valid versions on:
+* Github Releases: <https://github.com/jnonino/terraform-aws-jenkins/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/jenkins/aws>
+
 	module "jenkins" {
         source              = "jnonino/jenkins/aws"
         version             = "1.0.0"
