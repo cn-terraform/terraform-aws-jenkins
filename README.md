@@ -5,8 +5,8 @@ This Terraform module deploys a Jenkins Master Server providing high availabilit
 ## Usage
 
 	module "jenkins" {
-	    source = "jnonino/jenkins/aws"
-
+        source              = "jnonino/jenkins/aws"
+        version             = "1.0.0"
         name_preffix        = "${var.name_preffix}"
         profile             = "${var.profile}"
         region              = "${var.region}"
