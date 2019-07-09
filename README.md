@@ -2,6 +2,8 @@
 
 This Terraform module deploys a Jenkins Master Server providing high availability and scalability.
 
+[![CircleCI](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master.svg?style=svg)](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master)
+
 ## Usage
 
 Check valid versions on:
