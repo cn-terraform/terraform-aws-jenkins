@@ -1,17 +1,12 @@
 # ---------------------------------------------------------------------------------------------------------------------
 # AWS Cloudwatch
 # ---------------------------------------------------------------------------------------------------------------------
-resource "aws_cloudwatch_log_group" "jenkins_master_log_group" {
-  name              = local.jenkins_master_cloudwatch_log_path
-  retention_in_days = "7"
-  tags = {
-    Name = local.jenkins_master_cloudwatch_log_path
-  }
-}
-
-resource "aws_cloudwatch_log_stream" "jenkins_master_log_stream" {
-  name           = local.jenkins_master_cloudwatch_log_path
-  log_group_name = aws_cloudwatch_log_group.jenkins_master_log_group.name
+module "aws_cw_logs" {
+  source  = "jnonino/cloudwatch-logs/aws"
+  version = "1.0.2"
+  logs_path                   = local.jenkins_master_cloudwatch_log_path
+  profile                     = var.profile
+  region                      = var.region
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -28,7 +23,7 @@ data "template_file" "jenkins_master_td_template" {
     DOCKER_IMAGE_TAG           = "latest"
     CPU                        = local.jenkins_fargate_cpu_value
     MEMORY                     = local.jenkins_fargate_memory_value
-    CLOUDWATCH_PATH            = local.jenkins_master_cloudwatch_log_path
+    CLOUDWATCH_PATH            = module.aws_cw_logs.logs_path
     AWS_REGION                 = var.region
     JENKINS_CONTAINER_WEB_PORT = local.jenkins_container_web_port
     JENKINS_CONTAINER_SLV_PORT = local.jenkins_container_slave_port
