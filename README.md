@@ -3,6 +3,11 @@
 This Terraform module deploys a Jenkins Master Server providing high availability and scalability.
 
 [![CircleCI](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master.svg?style=svg)](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master)
+[![](https://img.shields.io/github/license/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
+[![](https://img.shields.io/github/issues/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
+[![](https://img.shields.io/github/issues-closed/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
+[![](https://img.shields.io/github/languages/code-size/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
+[![](https://img.shields.io/github/repo-size/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
 
 ## Usage
 
