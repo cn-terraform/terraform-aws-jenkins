@@ -2,22 +2,22 @@
 
 This Terraform module deploys a Jenkins Master Server providing high availability and scalability.
 
-[![CircleCI](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master.svg?style=svg)](https://circleci.com/gh/jnonino/terraform-aws-jenkins/tree/master)
-[![](https://img.shields.io/github/license/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
-[![](https://img.shields.io/github/issues/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
-[![](https://img.shields.io/github/issues-closed/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
-[![](https://img.shields.io/github/languages/code-size/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
-[![](https://img.shields.io/github/repo-size/jnonino/terraform-aws-jenkins)](https://github.com/jnonino/terraform-aws-jenkins)
+[![CircleCI](https://circleci.com/gh/cn-terraform/terraform-aws-jenkins/tree/master.svg?style=svg)](https://circleci.com/gh/cn-terraform/terraform-aws-jenkins/tree/master)
+[![](https://img.shields.io/github/license/cn-terraform/terraform-aws-jenkins)](https://github.com/cn-terraform/terraform-aws-jenkins)
+[![](https://img.shields.io/github/issues/cn-terraform/terraform-aws-jenkins)](https://github.com/cn-terraform/terraform-aws-jenkins)
+[![](https://img.shields.io/github/issues-closed/cn-terraform/terraform-aws-jenkins)](https://github.com/cn-terraform/terraform-aws-jenkins)
+[![](https://img.shields.io/github/languages/code-size/cn-terraform/terraform-aws-jenkins)](https://github.com/cn-terraform/terraform-aws-jenkins)
+[![](https://img.shields.io/github/repo-size/cn-terraform/terraform-aws-jenkins)](https://github.com/cn-terraform/terraform-aws-jenkins)
 
 ## Usage
 
 Check valid versions on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-jenkins/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/jenkins/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-jenkins/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/jenkins/aws>
 
     	module "jenkins" {
-            source              = "jnonino/jenkins/aws"
-            version             = "1.0.0"
+            source              = "cn-terraform/jenkins/aws"
+            version             = "2.0.1"
             name_preffix        = var.name_preffix
             profile             = var.profile
             region              = var.region
