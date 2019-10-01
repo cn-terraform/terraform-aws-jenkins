@@ -2,8 +2,8 @@
 # AWS Cloudwatch
 # ---------------------------------------------------------------------------------------------------------------------
 module "aws_cw_logs" {
-  source  = "jnonino/cloudwatch-logs/aws"
-  version = "1.0.2"
+  source  = "cn-terraform/cloudwatch-logs/aws"
+  version = "1.0.3"
   logs_path                   = local.jenkins_master_cloudwatch_log_path
   profile                     = var.profile
   region                      = var.region
