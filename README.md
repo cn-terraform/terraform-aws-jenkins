@@ -17,7 +17,7 @@ Check valid versions on:
 
     	module "jenkins" {
             source              = "cn-terraform/jenkins/aws"
-            version             = "2.0.1"
+            version             = "2.0.2"
             name_preffix        = var.name_preffix
             profile             = var.profile
             region              = var.region
