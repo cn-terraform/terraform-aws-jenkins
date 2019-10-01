@@ -29,7 +29,7 @@ Check valid versions on:
 The networking module should look like this:
 
         module "networking" {
-    	    source          = "jnonino/networking/aws"
+    	    source          = "cn-terraform/networking/aws"
             version         = "2.0.3"
             name_preffix    = "base"
             profile         = "aws_profile"
@@ -41,8 +41,8 @@ The networking module should look like this:
     	}
 
 Check versions for this module on:
-* Github Releases: <https://github.com/jnonino/terraform-aws-networking/releases>
-* Terraform Module Registry: <https://registry.terraform.io/modules/jnonino/networking/aws>
+* Github Releases: <https://github.com/cn-terraform/terraform-aws-networking/releases>
+* Terraform Module Registry: <https://registry.terraform.io/modules/cn-terraform/networking/aws>
 
 ## Output values
 
