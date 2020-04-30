@@ -110,7 +110,7 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "td" {
   source  = "cn-terraform/ecs-fargate-task-definition/aws"
-  version = "1.0.9"
+  version = "1.0.10"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
   name_preffix      = "${var.name_preffix}-jenkins"
