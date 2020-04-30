@@ -10,8 +10,10 @@ provider "aws" {
 # AWS Cloudwatch Logs
 # ---------------------------------------------------------------------------------------------------------------------
 module aws_cw_logs {
-  source    = "cn-terraform/cloudwatch-logs/aws"
-  version   = "1.0.4"
+  source  = "cn-terraform/cloudwatch-logs/aws"
+  version = "1.0.5"
+  # source  = "../terraform-aws-cloudwatch-logs"
+
   logs_path = "/ecs/service/${var.name_preffix}-jenkins-master"
   profile   = var.profile
   region    = var.region
@@ -22,23 +24,14 @@ module aws_cw_logs {
 # ---------------------------------------------------------------------------------------------------------------------
 locals {
   container_name = "${var.name_preffix}-jenkins"
-  log_configuration = {
-    logDriver = "awslogs"
-    options = {
-      "awslogs-region"        = var.region
-      "awslogs-group"         = module.aws_cw_logs.logs_path
-      "awslogs-stream-prefix" = "ecs"
-    }
-    secretOptions = null
-  }
   healthcheck = {
-    command     = [ "CMD-SHELL", "curl -f http://localhost:8080/login || exit 1" ]
+    command     = [ "CMD-SHELL", "curl -f http://localhost:8080 || exit 1" ]
     retries     = 3
     timeout     = 5
     interval    = 30
-    startPeriod = 20
+    startPeriod = 120
   }
-  port_mappings = [
+  td_port_mappings = [
     {
       containerPort = 8080
       hostPort      = 8080
@@ -50,30 +43,8 @@ locals {
       protocol      = "tcp"
     }
   ]
-  volumes = [{
-    name      = "jenkins_efs"
-    host_path = null
-    docker_volume_configuration = []
-    efs_volume_configuration = [{
-      file_system_id = aws_efs_file_system.jenkins_data.id
-      root_directory = "/var/jenkins_home"
-    }]
-  }]
-  mount_points = [
-    {
-      sourceVolume  = "jenkins_efs"
-      containerPath = "/var/jenkins_home"
-    }
-  ]
-}
-
-variable "mount_points" {
-  description = "(Optional) Container mount points. This is a list of maps, where each map should contain a `containerPath` and `sourceVolume`"
-  type = list(object({
-    containerPath = string
-    sourceVolume  = string
-  }))
-  default = null
+  service_http_ports  = [ 8080, 50000 ]
+  service_https_ports = []
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -82,6 +53,8 @@ variable "mount_points" {
 module ecs-cluster {
   source  = "cn-terraform/ecs-cluster/aws"
   version = "1.0.3"
+  # source  = "../terraform-aws-ecs-cluster"
+
   name    = "${var.name_preffix}-jenkins"
   profile = var.profile
   region  = var.region
@@ -95,6 +68,41 @@ resource "aws_efs_file_system" "jenkins_data" {
   tags = {
     Name = "${var.name_preffix}-jenkins-efs"
   }
+}
+resource "aws_security_group" "jenkins_data_allow_nfs_access" {
+  name        = "${var.name_preffix}-jenkins-efs-allow-nfs"
+  description = "Allow NFS inbound traffic to EFS"
+  vpc_id      = var.vpc_id
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = {
+    Name = "${var.name_preffix}-jenkins-efs-allow-nfs"
+  }
+}
+
+data "aws_subnet" "private_subnets" {
+  count = length(var.private_subnets_ids)
+  id    = element(var.private_subnets_ids, count.index)
+}
+
+resource "aws_security_group_rule" "jenkins_data_allow_nfs_access_rule" {
+  security_group_id        = aws_security_group.jenkins_data_allow_nfs_access.id
+  type                     = "ingress"
+  from_port                = 2049
+  to_port                  = 2049
+  protocol                 = "tcp"
+  source_security_group_id = module.ecs-fargate-service.ecs_tasks_sg_id
+}
+
+resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
+  count           = length(var.private_subnets_ids)
+  file_system_id  = aws_efs_file_system.jenkins_data.id
+  subnet_id       = element(var.private_subnets_ids, count.index)
+  security_groups = [ aws_security_group.jenkins_data_allow_nfs_access.id ]
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -112,32 +120,75 @@ module "td" {
   container_image   = "cnservices/jenkins-master"
   container_cpu     = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
   container_memory  = 4096 # 4 GB  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
-
+  port_mappings     = local.td_port_mappings
   healthcheck       = local.healthcheck
-  log_configuration = local.log_configuration
-  port_mappings     = local.port_mappings
-  volumes           = local.volumes
+  log_configuration = {
+    logDriver = "awslogs"
+    options = {
+      "awslogs-region"        = var.region
+      "awslogs-group"         = module.aws_cw_logs.logs_path
+      "awslogs-stream-prefix" = "ecs"
+    }
+    secretOptions = null
+  }
+  # volumes = [{
+  #   name      = "jenkins_efs"
+  #   host_path = null
+  #   docker_volume_configuration = null
+  #   efs_volume_configuration = [{
+  #     file_system_id = aws_efs_file_system.jenkins_data.id
+  #     root_directory = "/var/jenkins_home"
+  #   }]
+  # }]
+  # mount_points = [
+  #   {
+  #     sourceVolume  = "jenkins_efs"
+  #     containerPath = "/var/jenkins_home"
+  #   }
+  # ]
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# AWS LOAD BALANCER
+# ---------------------------------------------------------------------------------------------------------------------
+module "ecs-alb" {
+  source  = "cn-terraform/ecs-alb/aws"
+  version = "0.0.7"
+  # source  = "../terraform-aws-ecs-alb"
+
+  name_preffix    = "${var.name_preffix}-jenkins"
+  profile         = var.profile
+  region          = var.region
+  vpc_id          = var.vpc_id
+  private_subnets = var.private_subnets_ids
+  public_subnets  = var.public_subnets_ids
+  http_ports      = local.service_http_ports
+  https_ports     = local.service_https_ports
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
 # ECS Service
 # ---------------------------------------------------------------------------------------------------------------------
-# module ecs-fargate-service {
-#   # source              = "cn-terraform/ecs-fargate-service/aws"
-#   # version             = "1.0.10"
-#   source              = "../terraform-aws-ecs-fargate-service"
+module ecs-fargate-service {
+  source  = "cn-terraform/ecs-fargate-service/aws"
+  version = "2.0.1"
+  # source  = "../terraform-aws-ecs-fargate-service"
 
-#   name_preffix        = "${var.name_preffix}-jenkins"
-#   profile             = var.profile
-#   region              = var.region
-#   vpc_id              = var.vpc_id
-#   task_definition_arn = module.td.aws_ecs_task_definition_td_arn
-#   container_name      = local.container_name
-#   # container_port      = module.td.container_port
-#   ecs_cluster_name    = module.ecs-cluster.aws_ecs_cluster_cluster_name
-#   ecs_cluster_arn     = module.ecs-cluster.aws_ecs_cluster_cluster_arn
-#   private_subnets     = var.private_subnets_ids
-#   public_subnets      = var.public_subnets_ids
-
-#   health_check_grace_period_seconds = 20
-# }
+  name_preffix                      = "${var.name_preffix}-jenkins"
+  profile                           = var.profile
+  region                            = var.region
+  vpc_id                            = var.vpc_id
+  ecs_cluster_arn                   = module.ecs-cluster.aws_ecs_cluster_cluster_arn
+  health_check_grace_period_seconds = 120
+  task_definition_arn               = module.td.aws_ecs_task_definition_td_arn
+  public_subnets                    = var.public_subnets_ids
+  private_subnets                   = var.private_subnets_ids
+  container_name                    = local.container_name
+  ecs_cluster_name                  = module.ecs-cluster.aws_ecs_cluster_cluster_name
+  lb_arn                            = module.ecs-alb.aws_lb_lb_arn
+  lb_http_tgs_arns                  = module.ecs-alb.lb_http_tgs_arns
+  lb_https_tgs_arns                 = module.ecs-alb.lb_https_tgs_arns
+  lb_http_listeners_arns            = module.ecs-alb.lb_http_listeners_arns
+  lb_https_listeners_arns           = module.ecs-alb.lb_https_listeners_arns
+  load_balancer_sg_id               = module.ecs-alb.aws_security_group_lb_access_sg_id
+}
