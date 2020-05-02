@@ -153,7 +153,7 @@ module "td" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "ecs-alb" {
   source  = "cn-terraform/ecs-alb/aws"
-  version = "0.0.8"
+  version = "0.0.9"
   # source  = "../terraform-aws-ecs-alb"
 
   name_preffix    = "${var.name_preffix}-jenkins"
