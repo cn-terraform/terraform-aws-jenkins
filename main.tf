@@ -1,22 +1,12 @@
 # ---------------------------------------------------------------------------------------------------------------------
-# PROVIDER
-# ---------------------------------------------------------------------------------------------------------------------
-provider "aws" {
-  profile = var.profile
-  region  = var.region
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
 # AWS Cloudwatch Logs
 # ---------------------------------------------------------------------------------------------------------------------
 module aws_cw_logs {
   source  = "cn-terraform/cloudwatch-logs/aws"
-  version = "1.0.5"
+  version = "1.0.6"
   # source  = "../terraform-aws-cloudwatch-logs"
 
   logs_path = "/ecs/service/${var.name_preffix}-jenkins-master"
-  profile   = var.profile
-  region    = var.region
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -52,12 +42,10 @@ locals {
 # ---------------------------------------------------------------------------------------------------------------------
 module ecs-cluster {
   source  = "cn-terraform/ecs-cluster/aws"
-  version = "1.0.3"
+  version = "1.0.5"
   # source  = "../terraform-aws-ecs-cluster"
 
   name    = "${var.name_preffix}-jenkins"
-  profile = var.profile
-  region  = var.region
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -110,12 +98,10 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "td" {
   source  = "cn-terraform/ecs-fargate-task-definition/aws"
-  version = "1.0.10"
+  version = "1.0.11"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
   name_preffix      = "${var.name_preffix}-jenkins"
-  profile           = var.profile
-  region            = var.region
   container_name    = local.container_name
   container_image   = "cnservices/jenkins-master"
   container_cpu     = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
@@ -153,12 +139,10 @@ module "td" {
 # ---------------------------------------------------------------------------------------------------------------------
 module "ecs-alb" {
   source  = "cn-terraform/ecs-alb/aws"
-  version = "0.0.9"
+  version = "1.0.0"
   # source  = "../terraform-aws-ecs-alb"
 
   name_preffix    = "${var.name_preffix}-jenkins"
-  profile         = var.profile
-  region          = var.region
   vpc_id          = var.vpc_id
   private_subnets = var.private_subnets_ids
   public_subnets  = var.public_subnets_ids
@@ -171,12 +155,10 @@ module "ecs-alb" {
 # ---------------------------------------------------------------------------------------------------------------------
 module ecs-fargate-service {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.1"
+  version = "2.0.2"
   # source  = "../terraform-aws-ecs-fargate-service"
 
   name_preffix                      = "${var.name_preffix}-jenkins"
-  profile                           = var.profile
-  region                            = var.region
   vpc_id                            = var.vpc_id
   ecs_cluster_arn                   = module.ecs-cluster.aws_ecs_cluster_cluster_arn
   health_check_grace_period_seconds = 120
