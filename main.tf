@@ -15,7 +15,7 @@ module aws_cw_logs {
 locals {
   container_name = "${var.name_preffix}-jenkins"
   healthcheck = {
-    command     = [ "CMD-SHELL", "curl -f http://localhost:8080 || exit 1" ]
+    command     = ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
     retries     = 3
     timeout     = 5
     interval    = 30
@@ -33,7 +33,7 @@ locals {
       protocol      = "tcp"
     }
   ]
-  service_http_ports  = [ 8080, 50000 ]
+  service_http_ports  = [8080, 50000]
   service_https_ports = []
 }
 
@@ -45,7 +45,7 @@ module ecs-cluster {
   version = "1.0.5"
   # source  = "../terraform-aws-ecs-cluster"
 
-  name    = "${var.name_preffix}-jenkins"
+  name = "${var.name_preffix}-jenkins"
 }
 
 #------------------------------------------------------------------------------
@@ -90,7 +90,7 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
   count           = length(var.private_subnets_ids)
   file_system_id  = aws_efs_file_system.jenkins_data.id
   subnet_id       = element(var.private_subnets_ids, count.index)
-  security_groups = [ aws_security_group.jenkins_data_allow_nfs_access.id ]
+  security_groups = [aws_security_group.jenkins_data_allow_nfs_access.id]
 }
 
 #------------------------------------------------------------------------------
@@ -101,13 +101,13 @@ module "td" {
   version = "1.0.11"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
-  name_preffix      = "${var.name_preffix}-jenkins"
-  container_name    = local.container_name
-  container_image   = "cnservices/jenkins-master"
-  container_cpu     = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
-  container_memory  = 4096 # 4 GB  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
-  port_mappings     = local.td_port_mappings
-  healthcheck       = local.healthcheck
+  name_preffix     = "${var.name_preffix}-jenkins"
+  container_name   = local.container_name
+  container_image  = "cnservices/jenkins-master"
+  container_cpu    = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
+  container_memory = 4096 # 4 GB  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
+  port_mappings    = local.td_port_mappings
+  healthcheck      = local.healthcheck
   log_configuration = {
     logDriver = "awslogs"
     options = {
