@@ -3,17 +3,17 @@
 #------------------------------------------------------------------------------
 module aws_cw_logs {
   source  = "cn-terraform/cloudwatch-logs/aws"
-  version = "1.0.6"
+  version = "1.0.7"
   # source  = "../terraform-aws-cloudwatch-logs"
 
-  logs_path = "/ecs/service/${var.name_preffix}-jenkins-master"
+  logs_path = "/ecs/service/${var.name_prefix}-jenkins-master"
 }
 
 #------------------------------------------------------------------------------
 # Locals
 #------------------------------------------------------------------------------
 locals {
-  container_name = "${var.name_preffix}-jenkins"
+  container_name = "${var.name_prefix}-jenkins"
   healthcheck = {
     command     = ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
     retries     = 3
@@ -42,23 +42,23 @@ locals {
 #------------------------------------------------------------------------------
 module ecs-cluster {
   source  = "cn-terraform/ecs-cluster/aws"
-  version = "1.0.5"
+  version = "1.0.6"
   # source  = "../terraform-aws-ecs-cluster"
 
-  name = "${var.name_preffix}-jenkins"
+  name = "${var.name_prefix}-jenkins"
 }
 
 #------------------------------------------------------------------------------
 # EFS
 #------------------------------------------------------------------------------
 resource "aws_efs_file_system" "jenkins_data" {
-  creation_token = "${var.name_preffix}-jenkins-efs"
+  creation_token = "${var.name_prefix}-jenkins-efs"
   tags = {
-    Name = "${var.name_preffix}-jenkins-efs"
+    Name = "${var.name_prefix}-jenkins-efs"
   }
 }
 resource "aws_security_group" "jenkins_data_allow_nfs_access" {
-  name        = "${var.name_preffix}-jenkins-efs-allow-nfs"
+  name        = "${var.name_prefix}-jenkins-efs-allow-nfs"
   description = "Allow NFS inbound traffic to EFS"
   vpc_id      = var.vpc_id
   egress {
@@ -68,7 +68,7 @@ resource "aws_security_group" "jenkins_data_allow_nfs_access" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "${var.name_preffix}-jenkins-efs-allow-nfs"
+    Name = "${var.name_prefix}-jenkins-efs-allow-nfs"
   }
 }
 
@@ -98,10 +98,10 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
 #------------------------------------------------------------------------------
 module "td" {
   source  = "cn-terraform/ecs-fargate-task-definition/aws"
-  version = "1.0.11"
+  version = "1.0.15"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
-  name_preffix     = "${var.name_preffix}-jenkins"
+  name_prefix      = "${var.name_prefix}-jenkins"
   container_name   = local.container_name
   container_image  = "cnservices/jenkins-master"
   container_cpu    = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
@@ -139,10 +139,10 @@ module "td" {
 #------------------------------------------------------------------------------
 module "ecs-alb" {
   source  = "cn-terraform/ecs-alb/aws"
-  version = "1.0.2"
+  version = "1.0.5"
   # source  = "../terraform-aws-ecs-alb"
 
-  name_preffix    = "${var.name_preffix}-jenkins"
+  name_prefix     = "${var.name_prefix}-jenkins"
   vpc_id          = var.vpc_id
   private_subnets = var.private_subnets_ids
   public_subnets  = var.public_subnets_ids
@@ -155,10 +155,10 @@ module "ecs-alb" {
 #------------------------------------------------------------------------------
 module ecs-fargate-service {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.4"
+  version = "2.0.7"
   # source  = "../terraform-aws-ecs-fargate-service"
 
-  name_preffix                      = "${var.name_preffix}-jenkins"
+  name_prefix                       = "${var.name_prefix}-jenkins"
   vpc_id                            = var.vpc_id
   ecs_cluster_arn                   = module.ecs-cluster.aws_ecs_cluster_cluster_arn
   health_check_grace_period_seconds = 120
