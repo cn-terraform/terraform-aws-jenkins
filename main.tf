@@ -33,8 +33,17 @@ locals {
       protocol      = "tcp"
     }
   ]
-  service_http_ports  = [8080, 50000]
-  service_https_ports = []
+  service_http_ports  = {
+    ui = {
+      listener_port     = 80
+      target_group_port = 8080
+    },
+    workers = {
+      listener_port     = 5000
+      target_group_port = 5000
+    }
+  }
+  service_https_ports = {}
 }
 
 #------------------------------------------------------------------------------
@@ -135,27 +144,11 @@ module "td" {
 }
 
 #------------------------------------------------------------------------------
-# AWS LOAD BALANCER
-#------------------------------------------------------------------------------
-module "ecs-alb" {
-  source  = "cn-terraform/ecs-alb/aws"
-  version = "1.0.6"
-  # source  = "../terraform-aws-ecs-alb"
-
-  name_prefix     = "${var.name_prefix}-jenkins"
-  vpc_id          = var.vpc_id
-  private_subnets = var.private_subnets_ids
-  public_subnets  = var.public_subnets_ids
-  http_ports      = local.service_http_ports
-  https_ports     = local.service_https_ports
-}
-
-#------------------------------------------------------------------------------
 # ECS Service
 #------------------------------------------------------------------------------
 module ecs-fargate-service {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.9"
+  version = "2.0.10"
   # source  = "../terraform-aws-ecs-fargate-service"
 
   name_prefix                       = "${var.name_prefix}-jenkins"
@@ -167,12 +160,8 @@ module ecs-fargate-service {
   private_subnets                   = var.private_subnets_ids
   container_name                    = local.container_name
   ecs_cluster_name                  = module.ecs-cluster.aws_ecs_cluster_cluster_name
-  lb_arn                            = module.ecs-alb.aws_lb_lb_arn
-  lb_http_tgs_arns                  = module.ecs-alb.lb_http_tgs_arns
-  lb_https_tgs_arns                 = module.ecs-alb.lb_https_tgs_arns
-  lb_http_tgs_ports                 = module.ecs-alb.lb_http_tgs_ports
-  lb_https_tgs_ports                = module.ecs-alb.lb_https_tgs_ports
-  lb_http_listeners_arns            = module.ecs-alb.lb_http_listeners_arns
-  lb_https_listeners_arns           = module.ecs-alb.lb_https_listeners_arns
-  load_balancer_sg_id               = module.ecs-alb.aws_security_group_lb_access_sg_id
+
+
+  lb_http_ports  = local.service_http_ports
+  lb_https_ports = local.service_https_ports
 }
