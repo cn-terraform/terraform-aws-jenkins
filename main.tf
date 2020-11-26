@@ -33,7 +33,7 @@ locals {
       protocol      = "tcp"
     }
   ]
-  service_http_ports  = {
+  service_http_ports = {
     ui = {
       listener_port     = 80
       target_group_port = 8080
