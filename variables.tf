@@ -29,3 +29,11 @@ variable "private_subnets_ids" {
   type        = list
 }
 
+#------------------------------------------------------------------------------
+# AWS Autoscaling
+#------------------------------------------------------------------------------
+variable "enable_autoscaling" {
+  description = "(Optional) If true, autoscaling alarms will be created."
+  type        = bool
+  default     = true
+}

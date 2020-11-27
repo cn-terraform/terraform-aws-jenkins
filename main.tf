@@ -148,7 +148,7 @@ module "td" {
 #------------------------------------------------------------------------------
 module ecs-fargate-service {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.10"
+  version = "2.0.11"
   # source  = "../terraform-aws-ecs-fargate-service"
 
   name_prefix                       = "${var.name_prefix}-jenkins"
@@ -159,8 +159,8 @@ module ecs-fargate-service {
   public_subnets                    = var.public_subnets_ids
   private_subnets                   = var.private_subnets_ids
   container_name                    = local.container_name
+  enable_autoscaling                = var.enable_autoscaling
   ecs_cluster_name                  = module.ecs-cluster.aws_ecs_cluster_cluster_name
-
 
   lb_http_ports  = local.service_http_ports
   lb_https_ports = local.service_https_ports
