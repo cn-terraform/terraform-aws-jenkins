@@ -1,7 +1,7 @@
 #------------------------------------------------------------------------------
 # AWS Cloudwatch Logs
 #------------------------------------------------------------------------------
-module aws_cw_logs {
+module "aws_cw_logs" {
   source  = "cn-terraform/cloudwatch-logs/aws"
   version = "1.0.7"
   # source  = "../terraform-aws-cloudwatch-logs"
@@ -49,7 +49,7 @@ locals {
 #------------------------------------------------------------------------------
 # ECS Cluster
 #------------------------------------------------------------------------------
-module ecs-cluster {
+module "ecs-cluster" {
   source  = "cn-terraform/ecs-cluster/aws"
   version = "1.0.6"
   # source  = "../terraform-aws-ecs-cluster"
@@ -146,7 +146,7 @@ module "td" {
 #------------------------------------------------------------------------------
 # ECS Service
 #------------------------------------------------------------------------------
-module ecs-fargate-service {
+module "ecs-fargate-service" {
   source  = "cn-terraform/ecs-fargate-service/aws"
   version = "2.0.11"
   # source  = "../terraform-aws-ecs-fargate-service"
