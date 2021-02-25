@@ -107,7 +107,7 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
 #------------------------------------------------------------------------------
 module "td" {
   source  = "cn-terraform/ecs-fargate-task-definition/aws"
-  version = "1.0.20"
+  version = "1.0.21"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
   name_prefix      = "${var.name_prefix}-jenkins"
@@ -126,21 +126,24 @@ module "td" {
     }
     secretOptions = null
   }
-  # volumes = [{
-  #   name      = "jenkins_efs"
-  #   host_path = null
-  #   docker_volume_configuration = null
-  #   efs_volume_configuration = [{
-  #     file_system_id = aws_efs_file_system.jenkins_data.id
-  #     root_directory = "/var/jenkins_home"
-  #   }]
-  # }]
-  # mount_points = [
-  #   {
-  #     sourceVolume  = "jenkins_efs"
-  #     containerPath = "/var/jenkins_home"
-  #   }
-  # ]
+  volumes = [{
+    name      = "jenkins_efs"
+    host_path = null
+    docker_volume_configuration = []
+    efs_volume_configuration = [{
+      file_system_id          = aws_efs_file_system.jenkins_data.id
+      root_directory          = "/var/jenkins_home"
+      transit_encryption      = "DISABLED"
+      transit_encryption_port = null
+      authorization_config    = []
+    }]
+  }]
+  mount_points = [
+    {
+      sourceVolume  = "jenkins_efs"
+      containerPath = "/var/jenkins_home"
+    }
+  ]
 }
 
 #------------------------------------------------------------------------------
@@ -148,7 +151,7 @@ module "td" {
 #------------------------------------------------------------------------------
 module "ecs-fargate-service" {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.13"
+  version = "2.0.14"
   # source  = "../terraform-aws-ecs-fargate-service"
 
   name_prefix                       = "${var.name_prefix}-jenkins"
