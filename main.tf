@@ -3,7 +3,7 @@
 #------------------------------------------------------------------------------
 module "aws_cw_logs" {
   source  = "cn-terraform/cloudwatch-logs/aws"
-  version = "1.0.7"
+  version = "1.0.8"
   # source  = "../terraform-aws-cloudwatch-logs"
 
   logs_path = "/ecs/service/${var.name_prefix}-jenkins-master"
@@ -51,7 +51,7 @@ locals {
 #------------------------------------------------------------------------------
 module "ecs-cluster" {
   source  = "cn-terraform/ecs-cluster/aws"
-  version = "1.0.6"
+  version = "1.0.7"
   # source  = "../terraform-aws-ecs-cluster"
 
   name = "${var.name_prefix}-jenkins"
@@ -107,7 +107,7 @@ resource "aws_efs_mount_target" "jenkins_data_mount_targets" {
 #------------------------------------------------------------------------------
 module "td" {
   source  = "cn-terraform/ecs-fargate-task-definition/aws"
-  version = "1.0.21"
+  version = "1.0.23"
   # source  = "../terraform-aws-ecs-fargate-task-definition"
 
   name_prefix      = "${var.name_prefix}-jenkins"
@@ -151,7 +151,7 @@ module "td" {
 #------------------------------------------------------------------------------
 module "ecs-fargate-service" {
   source  = "cn-terraform/ecs-fargate-service/aws"
-  version = "2.0.14"
+  version = "2.0.15"
   # source  = "../terraform-aws-ecs-fargate-service"
 
   name_prefix                       = "${var.name_prefix}-jenkins"
