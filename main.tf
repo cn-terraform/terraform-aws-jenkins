@@ -39,8 +39,8 @@ locals {
       target_group_port = 8080
     },
     workers = {
-      listener_port     = 5000
-      target_group_port = 5000
+      listener_port     = 50000
+      target_group_port = 50000
     }
   }
   service_https_ports = {}
