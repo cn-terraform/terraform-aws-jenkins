@@ -142,6 +142,7 @@ module "td" {
     {
       sourceVolume  = "jenkins_efs"
       containerPath = "/var/jenkins_home"
+      readOnly      = false
     }
   ]
 }
