@@ -41,12 +41,13 @@ In order to run all checks at any point run the following command:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 3.74.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | n/a |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.74.1 |
 
 ## Modules
 
@@ -61,11 +62,11 @@ In order to run all checks at any point run the following command:
 
 | Name | Type |
 |------|------|
-| [aws_efs_file_system.jenkins_data](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
-| [aws_efs_mount_target.jenkins_data_mount_targets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
-| [aws_security_group.jenkins_data_allow_nfs_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
-| [aws_security_group_rule.jenkins_data_allow_nfs_access_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
-| [aws_subnet.private_subnets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnet) | data source |
+| [aws_efs_file_system.jenkins_data](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/efs_file_system) | resource |
+| [aws_efs_mount_target.jenkins_data_mount_targets](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/efs_mount_target) | resource |
+| [aws_security_group.jenkins_data_allow_nfs_access](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/security_group) | resource |
+| [aws_security_group_rule.jenkins_data_allow_nfs_access_rule](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/security_group_rule) | resource |
+| [aws_subnet.private_subnets](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/data-sources/subnet) | data source |
 
 ## Inputs
 
