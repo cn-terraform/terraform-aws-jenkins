@@ -41,32 +41,32 @@ In order to run all checks at any point run the following command:
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | 3.74.1 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 4 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 3.74.1 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 4.0.0 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_aws_cw_logs"></a> [aws\_cw\_logs](#module\_aws\_cw\_logs) | cn-terraform/cloudwatch-logs/aws | 1.0.8 |
-| <a name="module_ecs-cluster"></a> [ecs-cluster](#module\_ecs-cluster) | cn-terraform/ecs-cluster/aws | 1.0.7 |
-| <a name="module_ecs-fargate-service"></a> [ecs-fargate-service](#module\_ecs-fargate-service) | cn-terraform/ecs-fargate-service/aws | 2.0.18 |
-| <a name="module_td"></a> [td](#module\_td) | cn-terraform/ecs-fargate-task-definition/aws | 1.0.24 |
+| <a name="module_aws_cw_logs"></a> [aws\_cw\_logs](#module\_aws\_cw\_logs) | cn-terraform/cloudwatch-logs/aws | 1.0.9 |
+| <a name="module_ecs-cluster"></a> [ecs-cluster](#module\_ecs-cluster) | cn-terraform/ecs-cluster/aws | 1.0.8 |
+| <a name="module_ecs-fargate-service"></a> [ecs-fargate-service](#module\_ecs-fargate-service) | cn-terraform/ecs-fargate-service/aws | 2.0.20 |
+| <a name="module_td"></a> [td](#module\_td) | cn-terraform/ecs-fargate-task-definition/aws | 1.0.25 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_efs_file_system.jenkins_data](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/efs_file_system) | resource |
-| [aws_efs_mount_target.jenkins_data_mount_targets](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/efs_mount_target) | resource |
-| [aws_security_group.jenkins_data_allow_nfs_access](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/security_group) | resource |
-| [aws_security_group_rule.jenkins_data_allow_nfs_access_rule](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/resources/security_group_rule) | resource |
-| [aws_subnet.private_subnets](https://registry.terraform.io/providers/hashicorp/aws/3.74.1/docs/data-sources/subnet) | data source |
+| [aws_efs_file_system.jenkins_data](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_file_system) | resource |
+| [aws_efs_mount_target.jenkins_data_mount_targets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/efs_mount_target) | resource |
+| [aws_security_group.jenkins_data_allow_nfs_access](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
+| [aws_security_group_rule.jenkins_data_allow_nfs_access_rule](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group_rule) | resource |
+| [aws_subnet.private_subnets](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/subnet) | data source |
 
 ## Inputs
 
