@@ -51,7 +51,7 @@ locals {
 #------------------------------------------------------------------------------
 module "ecs-cluster" {
   source  = "cn-terraform/ecs-cluster/aws"
-  version = "1.0.9"
+  version = "1.0.10"
   # source  = "../terraform-aws-ecs-cluster"
 
   name = "${var.name_prefix}-jenkins"
