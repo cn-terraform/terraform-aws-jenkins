@@ -168,6 +168,7 @@ module "ecs-fargate-service" {
   container_name                    = local.container_name
   enable_autoscaling                = var.enable_autoscaling
   ecs_cluster_name                  = module.ecs-cluster.aws_ecs_cluster_cluster_name
+  waf_web_acl_arn                   = var.lb_waf_web_acl_arn
 
   lb_http_ports  = local.service_http_ports
   lb_https_ports = local.service_https_ports
