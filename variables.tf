@@ -29,6 +29,12 @@ variable "private_subnets_ids" {
   type        = list(any)
 }
 
+variable "lb_waf_web_acl_arn" {
+  description = "ARN of a WAFV2 to associate with the ALB"
+  type        = string
+  default     = ""
+}
+
 #------------------------------------------------------------------------------
 # AWS Autoscaling
 #------------------------------------------------------------------------------
