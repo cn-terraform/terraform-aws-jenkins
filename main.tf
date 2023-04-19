@@ -115,9 +115,9 @@ module "td" {
 
   name_prefix      = "${var.name_prefix}-jenkins"
   container_name   = local.container_name
-  container_image  = "cnservices/jenkins-master"
-  container_cpu    = 2048 # 2 vCPU - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
-  container_memory = 4096 # 4 GB  - https://docs.aws.amazon.com/AmazonECS/latest/developerguide/AWS_Fargate.html#fargate-task-defs
+  container_image  = var.container_image
+  container_cpu    = var.container_cpu
+  container_memory = var.container_memory
   port_mappings    = local.td_port_mappings
   healthcheck      = local.healthcheck
   log_configuration = {
@@ -135,7 +135,7 @@ module "td" {
     docker_volume_configuration = []
     efs_volume_configuration = [{
       file_system_id          = aws_efs_file_system.jenkins_data.id
-      root_directory          = "/var/jenkins_home"
+      root_directory          = "/"
       transit_encryption      = "DISABLED"
       transit_encryption_port = null
       authorization_config    = []
